@@ -10,8 +10,7 @@ services:
     networks:
       - sharex
     volumes:
-      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
-      - ./docker/nest-sharex/uploads:/nest-sharex/uploads
+      - ./docker/postgres/data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
 
@@ -20,6 +19,9 @@ services:
     restart: unless-stopped
     networks:
       - sharex
+    volumes:
+      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
+      - ./docker/nest-sharex/uploads:/nest-sharex/uploads
     depends_on:
       - db
     env_file: '.env'
