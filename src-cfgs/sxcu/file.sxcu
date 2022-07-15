@@ -1,0 +1,15 @@
+{
+  "Version": "14.0.1",
+  "Name": "File uploader",
+  "DestinationType": "FileUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "<%= MAIN_API_URL %>/f",
+  "Headers": {
+    "X-API-Key": "<%= API_KEY %>"
+  },
+  "Body": "MultipartFormData",
+  "FileFormName": "file",
+  "URL": "<%= MAIN_API_URL %>/f/{json:stringId}",
+  "DeletionURL": "<%= MAIN_API_URL %>/f/delete/{json:deleteKey}",
+  "ErrorMessage": "{json:message}"
+}

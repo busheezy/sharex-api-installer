@@ -1,0 +1,15 @@
+{
+  "Version": "14.0.1",
+  "Name": "URL shortener",
+  "DestinationType": "URLShortener",
+  "RequestMethod": "POST",
+  "RequestURL": "<%= MAIN_API_URL %>/l",
+  "Headers": {
+    "X-API-Key": "<%= API_KEY %>"
+  },
+  "Body": "JSON",
+  "Data": "{\n  \"url\": \"{input}\"\n}",
+  "URL": "<%= MAIN_API_URL %>/l/{json:stringId}",
+  "DeletionURL": "<%= MAIN_API_URL %>/l/delete/{json:deleteKey}",
+  "ErrorMessage": "{json:message}"
+}

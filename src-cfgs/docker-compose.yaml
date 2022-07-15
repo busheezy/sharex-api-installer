@@ -1,0 +1,50 @@
+version: '3'
+
+networks:
+  sharex:
+
+services:
+  db:
+    image: postgres
+    restart: unless-stopped
+    networks:
+      - sharex
+    volumes:
+      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
+      - ./docker/nest-sharex/uploads:/nest-sharex/uploads
+    environment:
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+
+  api:
+    image: sharex-api:latest
+    restart: unless-stopped
+    networks:
+      - sharex
+    depends_on:
+      - db
+    env_file: '.env'
+
+  front:
+    image: vitesharex:latest
+    container_name: vitesharex
+    networks:
+      - sharex
+    depends_on:
+      - api
+    volumes:
+      - ./docker/vite/dist:/vite-sharex/dist
+    env_file: '.env'
+
+  caddy:
+    image: caddy:2.5.2-alpine
+    restart: unless-stopped
+    networks:
+      - sharex
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./docker/caddy/caddy_data:/data
+      - ./docker/caddy/caddy_config:/config
+      - ./docker/vite/dist:/srv/vite/dist

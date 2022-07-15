@@ -1,0 +1,18 @@
+<%= MAIN_API_URL %> {
+	reverse_proxy api:3000
+}
+
+<%= FRONT_API_URL %> {
+	encode gzip
+
+	handle /api/* {
+		uri strip_prefix /api
+		reverse_proxy api:3000
+	}
+
+	handle {
+		root * /srv/vite/dist
+		try_files {path} /index.html
+		file_server
+	}
+}

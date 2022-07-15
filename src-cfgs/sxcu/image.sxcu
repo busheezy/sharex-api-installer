@@ -1,0 +1,16 @@
+{
+  "Version": "14.0.1",
+  "Name": "Image uploader",
+  "DestinationType": "ImageUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "<%= MAIN_API_URL %>/i",
+  "Headers": {
+    "X-API-Key": "<%= API_KEY %>"
+  },
+  "Body": "MultipartFormData",
+  "FileFormName": "image",
+  "URL": "<%= MAIN_API_URL %>/i/{json:stringId}",
+  "ThumbnailURL": "<%= MAIN_API_URL %>/i/{json:stringId}/thumbnail",
+  "DeletionURL": "<%= MAIN_API_URL %>/i/delete/{json:deleteKey}",
+  "ErrorMessage": "{json:message}"
+}
