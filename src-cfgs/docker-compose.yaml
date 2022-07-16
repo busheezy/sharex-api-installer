@@ -20,8 +20,8 @@ services:
     networks:
       - sharex
     volumes:
-      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
       - ./docker/nest-sharex/uploads:/nest-sharex/uploads
+      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
     depends_on:
       - db
     env_file: '.env'

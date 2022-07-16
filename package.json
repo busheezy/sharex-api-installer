@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "docker:build": "docker build --pull --rm -t busheezy/sharex-api-installer:latest .",
+    "docker:build": "docker build --no-cache --pull --rm -t busheezy/sharex-api-installer:latest .",
     "docker:push": "docker push busheezy/sharex-api-installer:latest"
   },
   "dependencies": {
