@@ -14,6 +14,7 @@ import { EnvVars, Prompt } from './app.types';
 import { template as templateWithStrip } from 'dot';
 
 import Bluebird from 'bluebird';
+import { readdir } from 'node:fs/promises';
 
 const outputPath = join(process.cwd(), 'output');
 
@@ -37,6 +38,14 @@ const template = (templateString: string) => {
 @Injectable()
 export class AppService implements OnModuleInit {
   async onModuleInit() {
+    const isDirEmpty = await this.isOutputDirEmpty();
+    if (!isDirEmpty) {
+      const overwrite = await this.startOverwriteQuestion();
+      if (!overwrite) {
+        return;
+      }
+    }
+
     const envVars = this.envVars;
     await this.startApiQuestions(envVars);
 
@@ -53,6 +62,27 @@ export class AppService implements OnModuleInit {
       await ensureDir(caddyOutputFolderPath);
       await this.createCaddyFile(envVars);
     }
+
+    console.log('Files have been created.');
+  }
+
+  async isOutputDirEmpty(): Promise<boolean> {
+    const dir = await readdir(outputPath);
+
+    return dir.length === 0;
+  }
+
+  async startOverwriteQuestion() {
+    const promptOverwriteOutput = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: Prompt.USING_OWN_WEB_SERVER,
+        message: 'Output directory is not empty. Output anyways?',
+        default: false,
+      },
+    ]);
+
+    return promptOverwriteOutput[Prompt.USING_OWN_WEB_SERVER] as boolean;
   }
 
   async startApiQuestions(envVars: EnvVars) {

@@ -18,4 +18,5 @@ export enum Prompt {
   API_KEY = 'api_key',
   USING_OWN_WEB_SERVER = 'using_own_web_server',
   OWN_WEB_SERVER_PORT = 'own_web_server_port',
+  OVERWRITE_OUTPUT = 'overwrite_output',
 }
