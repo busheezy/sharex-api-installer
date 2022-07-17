@@ -1,8 +1,8 @@
-<%= MAIN_API_URL %> {
+{{= it.MAIN_API_URL }} {
 	reverse_proxy api:3000
 }
 
-<%= FRONT_API_URL %> {
+{{= it.FRONT_API_URL }} {
 	encode gzip
 
 	handle /api/* {

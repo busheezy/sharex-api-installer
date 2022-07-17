@@ -3,13 +3,13 @@
   "Name": "URL shortener",
   "DestinationType": "URLShortener",
   "RequestMethod": "POST",
-  "RequestURL": "<%= MAIN_API_URL %>/l",
+  "RequestURL": "{{= it.MAIN_API_URL }}/l",
   "Headers": {
-    "X-API-Key": "<%= API_KEY %>"
+    "X-API-Key": "{{= it.API_KEY }}"
   },
   "Body": "JSON",
   "Data": "{\n  \"url\": \"{input}\"\n}",
-  "URL": "<%= MAIN_API_URL %>/l/{json:stringId}",
-  "DeletionURL": "<%= MAIN_API_URL %>/l/delete/{json:deleteKey}",
+  "URL": "{{= it.MAIN_API_URL }}/l/{json:stringId}",
+  "DeletionURL": "{{= it.MAIN_API_URL }}/l/delete/{json:deleteKey}",
   "ErrorMessage": "{json:message}"
 }

@@ -3,13 +3,13 @@
   "Name": "File uploader",
   "DestinationType": "FileUploader",
   "RequestMethod": "POST",
-  "RequestURL": "<%= MAIN_API_URL %>/f",
+  "RequestURL": "{{= it.MAIN_API_URL }}/f",
   "Headers": {
-    "X-API-Key": "<%= API_KEY %>"
+    "X-API-Key": "{{= it.API_KEY }}"
   },
   "Body": "MultipartFormData",
   "FileFormName": "file",
-  "URL": "<%= MAIN_API_URL %>/f/{json:stringId}",
-  "DeletionURL": "<%= MAIN_API_URL %>/f/delete/{json:deleteKey}",
+  "URL": "{{= it.MAIN_API_URL }}/f/{json:stringId}",
+  "DeletionURL": "{{= it.MAIN_API_URL }}/f/delete/{json:deleteKey}",
   "ErrorMessage": "{json:message}"
 }

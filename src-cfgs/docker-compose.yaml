@@ -24,7 +24,9 @@ services:
       - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
     depends_on:
       - db
-    env_file: '.env'
+    env_file: '.env'{{? it.port }}
+    ports:
+      - '{{= it.port }}:3000'{{?}}
 
   front:
     image: busheezy/sharex-paste-front:latest
@@ -36,7 +38,7 @@ services:
     volumes:
       - ./docker/vite/dist:/vite-sharex/dist
     env_file: '.env'
-
+{{? !it.port }}
   caddy:
     image: caddy:2.5.2-alpine
     restart: unless-stopped
@@ -50,3 +52,4 @@ services:
       - ./docker/caddy/caddy_data:/data
       - ./docker/caddy/caddy_config:/config
       - ./docker/vite/dist:/srv/vite/dist
+{{?}}

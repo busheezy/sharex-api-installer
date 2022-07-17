@@ -8,10 +8,10 @@ import { nolookalikes } from 'nanoid-dictionary';
 const nanoid = customAlphabet(nolookalikes, 8);
 
 import { join } from 'node:path';
-import { copyFile, writeFile, ensureDir, readFile } from 'fs-extra';
+import { writeFile, ensureDir, readFile } from 'fs-extra';
 import { EnvVars, Prompt } from './app.types';
 
-import template from 'lodash.template';
+import { template as templateWithStrip } from 'dot';
 
 import Bluebird from 'bluebird';
 
@@ -28,18 +28,31 @@ const envFilePath = join(outputPath, '.env');
 
 const sxcuFolderpath = join(process.cwd(), 'src-cfgs', 'sxcu');
 
+const template = (templateString: string) => {
+  return templateWithStrip(templateString, {
+    strip: false,
+  });
+};
+
 @Injectable()
 export class AppService implements OnModuleInit {
   async onModuleInit() {
-    await this.makeSureDirsExist();
-
     const envVars = this.envVars;
     await this.startApiQuestions(envVars);
 
-    await this.createCaddyFile(envVars);
+    await ensureDir(join(outputPath));
     await this.createEnvFile(envVars);
-    await this.createComposeFile();
+
+    await ensureDir(join(outputPath, 'sxcu'));
     await this.createSxcuFiles(envVars);
+
+    const port = await this.startWebServerQuestions();
+    await this.createComposeFile(port);
+
+    if (!port) {
+      await ensureDir(caddyOutputFolderPath);
+      await this.createCaddyFile(envVars);
+    }
   }
 
   async startApiQuestions(envVars: EnvVars) {
@@ -68,6 +81,35 @@ export class AppService implements OnModuleInit {
     envVars.MAIN_API_URL = answers[Prompt.MAIN_API_URL];
     envVars.FRONT_API_URL = answers[Prompt.FRONT_API_URL];
     envVars.API_KEY = answers[Prompt.API_KEY];
+  }
+
+  async startWebServerQuestions(): Promise<number | false> {
+    const promptUsingOwnWebServer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: Prompt.USING_OWN_WEB_SERVER,
+        message: 'Are you using your own web server?',
+        default: false,
+      },
+    ]);
+
+    const usingOwnWebServer =
+      promptUsingOwnWebServer[Prompt.USING_OWN_WEB_SERVER];
+
+    if (!usingOwnWebServer) {
+      return false;
+    }
+
+    const promptPort = await inquirer.prompt([
+      {
+        type: 'number',
+        name: Prompt.OWN_WEB_SERVER_PORT,
+        message: 'What port would you like to expose?',
+        default: 3000,
+      },
+    ]);
+
+    return promptPort[Prompt.OWN_WEB_SERVER_PORT] as number;
   }
 
   randomString() {
@@ -108,6 +150,7 @@ export class AppService implements OnModuleInit {
     const inputCaddyFile = await readFile(caddyFilePath, 'utf-8');
 
     const compiled = template(inputCaddyFile);
+
     const outputCaddyString = compiled({
       MAIN_API_URL: envVars.MAIN_API_URL,
       FRONT_API_URL: envVars.FRONT_API_URL,
@@ -121,25 +164,21 @@ export class AppService implements OnModuleInit {
     await writeFile(envFilePath, envFileSz);
   }
 
-  async makeSureDirsExist() {
-    await ensureDir(caddyOutputFolderPath);
-    await ensureDir(join(outputPath, 'sxcu'));
-  }
+  async createComposeFile(port: number | false) {
+    const loadedSrcComposeFile = await readFile(composePath, 'utf-8');
+    const outputComposeFile = template(loadedSrcComposeFile)({ port });
 
-  async createComposeFile() {
-    await copyFile(composePath, composeOutputPath);
+    await writeFile(composeOutputPath, outputComposeFile);
   }
 
   async createSxcuFiles(envVars: EnvVars) {
     const fileNames = ['file', 'image', 'text', 'url'];
 
-    await Bluebird.map(fileNames, async (fileName) => {
+    await Bluebird.mapSeries(fileNames, async (fileName) => {
       const filePath = join(sxcuFolderpath, `${fileName}.sxcu`);
       const loadedSxcu = await readFile(filePath, 'utf-8');
 
-      const compiled = template(loadedSxcu);
-
-      const outputSxcuFile = compiled({
+      const outputSxcuFile = template(loadedSxcu)({
         MAIN_API_URL: envVars.MAIN_API_URL,
         FRONT_API_URL: envVars.FRONT_API_URL,
         API_KEY: envVars.API_KEY,

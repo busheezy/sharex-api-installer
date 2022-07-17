@@ -3,14 +3,14 @@
   "Name": "Image uploader",
   "DestinationType": "ImageUploader",
   "RequestMethod": "POST",
-  "RequestURL": "<%= MAIN_API_URL %>/i",
+  "RequestURL": "{{= it.MAIN_API_URL }}/i",
   "Headers": {
-    "X-API-Key": "<%= API_KEY %>"
+    "X-API-Key": "{{= it.API_KEY }}"
   },
   "Body": "MultipartFormData",
   "FileFormName": "image",
-  "URL": "<%= MAIN_API_URL %>/i/{json:stringId}",
-  "ThumbnailURL": "<%= MAIN_API_URL %>/i/{json:stringId}/thumbnail",
-  "DeletionURL": "<%= MAIN_API_URL %>/i/delete/{json:deleteKey}",
+  "URL": "{{= it.MAIN_API_URL }}/i/{json:stringId}",
+  "ThumbnailURL": "{{= it.MAIN_API_URL }}/i/{json:stringId}/thumbnail",
+  "DeletionURL": "{{= it.MAIN_API_URL }}/i/delete/{json:deleteKey}",
   "ErrorMessage": "{json:message}"
 }

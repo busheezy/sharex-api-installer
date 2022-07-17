@@ -3,13 +3,13 @@
   "Name": "Text uploader",
   "DestinationType": "TextUploader",
   "RequestMethod": "POST",
-  "RequestURL": "<%= MAIN_API_URL %>/p",
+  "RequestURL": "{{= it.MAIN_API_URL }}/p",
   "Headers": {
-    "X-API-Key": "<%= API_KEY %>"
+    "X-API-Key": "{{= it.API_KEY }}"
   },
   "Body": "MultipartFormData",
   "FileFormName": "paste",
-  "URL": "<%= FRONT_API_URL %>/{json:stringId}",
-  "DeletionURL": "<%= MAIN_API_URL %>/p/delete/{json:deleteKey}",
+  "URL": "{{= it.FRONT_API_URL }}/{json:stringId}",
+  "DeletionURL": "{{= it.MAIN_API_URL }}/p/delete/{json:deleteKey}",
   "ErrorMessage": "{json:message}"
 }
