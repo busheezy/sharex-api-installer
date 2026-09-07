@@ -28,6 +28,10 @@ Environment and uploader files are written with owner-only permissions, includin
 
 From the output directory, run `docker compose up -d`. The frontend container generates static files and exits normally. With your own web server, route requests to the API and serve `docker/vite/dist` with an `index.html` fallback for paste URLs. The browser needs access to `/api` or the configured API origin.
 
+## Migrating an existing installation
+
+See the [September 7, 2026 migration guide](MIGRATION.md) for upgrading from before that day’s changes, including verification and rollback.
+
 ## Existing installations
 
 Generated profiles retain the same endpoints and response fields. The API mounts now target `/app/uploads` and `/app/thumbnails`, matching the API image. Copy any uploads held only inside an older container into the mounted host directories before replacing it.
