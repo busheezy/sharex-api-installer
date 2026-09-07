@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 
-import * as inquirer from "inquirer";
+import inquirer from "inquirer";
 
 import { customAlphabet } from "nanoid";
 import { nolookalikes } from "nanoid-dictionary";
@@ -11,7 +11,7 @@ import { join } from "node:path";
 import { writeFile, ensureDir, readFile } from "fs-extra";
 import { EnvVars, Prompt } from "./app.types";
 
-import { template as templateWithStrip } from "dot";
+import { template as templateWithStrip, templateSettings } from "dot";
 
 import Bluebird from "bluebird";
 import { readdir } from "node:fs/promises";
@@ -31,6 +31,7 @@ const sxcuFolderpath = join(process.cwd(), "src-cfgs", "sxcu");
 
 const template = (templateString: string) => {
   return templateWithStrip(templateString, {
+    ...templateSettings,
     strip: false,
   });
 };
@@ -88,7 +89,9 @@ export class AppService implements OnModuleInit {
   }
 
   async startApiQuestions(envVars: EnvVars) {
-    const answers = await inquirer.prompt([
+    const answers = await inquirer.prompt<
+      Record<Prompt.MAIN_API_URL | Prompt.FRONT_API_URL | Prompt.API_KEY, string>
+    >([
       {
         type: "input",
         name: Prompt.MAIN_API_URL,
@@ -109,16 +112,19 @@ export class AppService implements OnModuleInit {
         type: "password",
         mask: "*",
         name: Prompt.API_KEY,
-        message: "What do you want your API key to be?",
-        default: envVars.API_KEY,
-        validate: this.validateSecret,
+        message: "What do you want your API key to be? Leave blank to generate one.",
+        validate: (value: string) => {
+          const apiKey = value || envVars.API_KEY;
+          return this.validateSecret(apiKey);
+        },
       },
     ]);
 
     envVars.VITE_APP_API_URL = "/api";
     envVars.MAIN_API_URL = answers[Prompt.MAIN_API_URL];
     envVars.FRONT_API_URL = answers[Prompt.FRONT_API_URL];
-    envVars.API_KEY = answers[Prompt.API_KEY];
+    const apiKey = answers[Prompt.API_KEY] || envVars.API_KEY;
+    envVars.API_KEY = apiKey;
   }
 
   async startWebServerQuestions(): Promise<number | false> {
@@ -150,7 +156,7 @@ export class AppService implements OnModuleInit {
     return promptPort[Prompt.OWN_WEB_SERVER_PORT] as number;
   }
 
-  validateUrl(value: string): boolean | string {
+  validateUrl(value: string): true | string {
     try {
       const url = new URL(value);
       const isHttp = url.protocol === "http:" || url.protocol === "https:";
@@ -167,12 +173,12 @@ export class AppService implements OnModuleInit {
     return "Use an HTTP or HTTPS origin without a path, query, or credentials.";
   }
 
-  validateSecret(value: string): boolean | string {
+  validateSecret(value: string): true | string {
     const isSafe = /^[A-Za-z0-9_-]+$/.test(value);
     return isSafe || "Use letters, numbers, underscores, and hyphens for the API key.";
   }
 
-  validatePort(value: number): boolean | string {
+  validatePort(value: number): true | string {
     const isInteger = Number.isInteger(value);
     const isValid = isInteger && value >= 1 && value <= 65535;
     return isValid || "Enter a whole-number port between 1 and 65535.";

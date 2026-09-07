@@ -36,11 +36,11 @@ New configurations pin PostgreSQL 17 and Caddy 2. Before regenerating an existin
 
 ## Development
 
-Use Node.js 24.19+ within 24.x and pnpm 10.34.5.
+Use Node.js 24.19+ within 24.x and pnpm 12.3.4.
 
 ```sh
 nvm use
-npm install --global pnpm@10.34.5
+npm install --global pnpm@12.3.4
 pnpm install --frozen-lockfile
 pnpm check
 pnpm build
@@ -52,3 +52,7 @@ The local CLI writes to `output/`. Use `pnpm format` and `pnpm lint:fix` for for
 ## Image publishing
 
 CI publishes `ghcr.io/busheezy/sharex-api-installer:latest` and `sha-<commit>` tags after checks pass on `main`. Images support Linux amd64 and arm64. Pull requests build images without publishing them. Publishing uses the repository’s GitHub token; Docker Hub credentials are not required.
+
+## Dependency compatibility
+
+The installer uses NestJS 12, Inquirer 14, and Nano ID 6. TypeScript stays on 6.0.3 because Nest CLI requires the compiler API that TypeScript 7 does not provide. doT uses its latest stable release, 1.1.3, instead of the old 2.0 beta, with whitespace-preserving template settings.

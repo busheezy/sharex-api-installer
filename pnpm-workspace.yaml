@@ -1,1 +1,1 @@
-onlyBuiltDependencies: ["@nestjs/core"]
+allowBuilds: { "@nestjs/core": true }
