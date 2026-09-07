@@ -13,10 +13,10 @@ export interface EnvVars {
 }
 
 export enum Prompt {
-  MAIN_API_URL = 'main_api_url',
-  FRONT_API_URL = 'typegen_api_url',
-  API_KEY = 'api_key',
-  USING_OWN_WEB_SERVER = 'using_own_web_server',
-  OWN_WEB_SERVER_PORT = 'own_web_server_port',
-  OVERWRITE_OUTPUT = 'overwrite_output',
+  MAIN_API_URL = "main_api_url",
+  FRONT_API_URL = "typegen_api_url",
+  API_KEY = "api_key",
+  USING_OWN_WEB_SERVER = "using_own_web_server",
+  OWN_WEB_SERVER_PORT = "own_web_server_port",
+  OVERWRITE_OUTPUT = "overwrite_output",
 }

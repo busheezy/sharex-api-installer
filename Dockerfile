@@ -1,18 +1,20 @@
-FROM node:16
-
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
-
-RUN mkdir -p /setup-sharex/output
+FROM node:24.19.0-bookworm-slim AS base
 WORKDIR /setup-sharex
+RUN npm install --global pnpm@10.34.5
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-COPY package.json pnpm-lock.yaml ./
+FROM base AS prod-deps
+RUN --mount=type=cache,id=sharex-installer-pnpm,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
 
-RUN pnpm install --frozen-lockfile --prod
-
+FROM base AS build
+RUN --mount=type=cache,id=sharex-installer-pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 COPY . .
+RUN pnpm build
 
-RUN pnpm install @nestjs/cli@^8.0.0 && pnpm build
-
-VOLUME [ "/setup-sharex/output" ]
-
-CMD [ "pnpm", "start" ]
+FROM node:24.19.0-bookworm-slim
+WORKDIR /setup-sharex
+COPY --from=prod-deps /setup-sharex/node_modules ./node_modules
+COPY --from=build /setup-sharex/dist ./dist
+COPY src-cfgs ./src-cfgs
+VOLUME ["/setup-sharex/output"]
+CMD ["node", "dist/main.js"]

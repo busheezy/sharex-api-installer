@@ -1,11 +1,9 @@
-version: '3'
-
 networks:
   sharex:
 
 services:
   db:
-    image: postgres
+    image: postgres:17-alpine
     restart: unless-stopped
     networks:
       - sharex
@@ -13,24 +11,29 @@ services:
       - ./docker/postgres/data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
-    image: busheezy/sharex-api:latest
+    image: ghcr.io/busheezy/sharex-api:latest
     restart: unless-stopped
     networks:
       - sharex
     volumes:
-      - ./docker/nest-sharex/uploads:/nest-sharex/uploads
-      - ./docker/nest-sharex/thumbnails:/nest-sharex/thumbnails
+      - ./docker/nest-sharex/uploads:/app/uploads
+      - ./docker/nest-sharex/thumbnails:/app/thumbnails
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file: '.env'{{? it.port }}
     ports:
       - '{{= it.port }}:3000'{{?}}
 
   front:
-    image: busheezy/sharex-paste-front:latest
-    container_name: vitesharex
+    image: ghcr.io/busheezy/sharex-paste-front:latest
     networks:
       - sharex
     depends_on:
@@ -40,7 +43,7 @@ services:
     env_file: '.env'
 {{? !it.port }}
   caddy:
-    image: caddy:2.5.2-alpine
+    image: caddy:2-alpine
     restart: unless-stopped
     networks:
       - sharex

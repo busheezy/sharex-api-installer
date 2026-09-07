@@ -1,4 +1,15 @@
 node_modules
+dist
+.git
+.github
+.vscode
+*.md
 .env
-test
+.env.*
+coverage
+*.log
+*.tsbuildinfo
+uploads
+thumbnails
 output
+docker
