@@ -14,7 +14,7 @@ import { EnvVars, Prompt } from "./app.types";
 import { template as templateWithStrip, templateSettings } from "dot";
 
 import Bluebird from "bluebird";
-import { readdir } from "node:fs/promises";
+import { open, readdir } from "node:fs/promises";
 
 const outputPath = join(process.cwd(), "output");
 
@@ -35,6 +35,16 @@ const template = (templateString: string) => {
     strip: false,
   });
 };
+
+async function writePrivateFile(path: string, content: string) {
+  const file = await open(path, "w", 0o600);
+  try {
+    await file.chmod(0o600);
+    await file.writeFile(content);
+  } finally {
+    await file.close();
+  }
+}
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -227,7 +237,7 @@ export class AppService implements OnModuleInit {
 
   async createEnvFile(envVars: EnvVars) {
     const envFileSz = this.buildEnvVarsFileSz(envVars);
-    await writeFile(envFilePath, envFileSz, { mode: 0o600 });
+    await writePrivateFile(envFilePath, envFileSz);
   }
 
   async createComposeFile(port: number | false) {
@@ -251,7 +261,7 @@ export class AppService implements OnModuleInit {
 
       const outputSxcuPath = join(outputPath, "sxcu", `${fileName}.sxcu`);
 
-      await writeFile(outputSxcuPath, outputSxcuFile, { mode: 0o600 });
+      await writePrivateFile(outputSxcuPath, outputSxcuFile);
     });
   }
 }

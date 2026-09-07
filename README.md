@@ -24,7 +24,7 @@ Generated output includes:
 - `sxcu/` with image, file, text, and URL upload profiles.
 - `docker/caddy/Caddyfile` when using the bundled web server.
 
-Environment and uploader files are created with owner-only permissions on systems that support them. Keep them private. API keys may contain letters, numbers, underscores, and hyphens so they can be embedded safely in every generated format.
+Environment and uploader files are written with owner-only permissions, including when overwriting existing files, on systems that support them. Keep them private. API keys may contain letters, numbers, underscores, and hyphens so they can be embedded safely in every generated format.
 
 From the output directory, run `docker compose up -d`. The frontend container generates static files and exits normally. With your own web server, route requests to the API and serve `docker/vite/dist` with an `index.html` fallback for paste URLs. The browser needs access to `/api` or the configured API origin.
 
