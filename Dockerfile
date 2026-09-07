@@ -1,4 +1,4 @@
-FROM node:24.19.0-bookworm-slim AS base
+FROM node:26.8.1-bookworm-slim AS base
 WORKDIR /setup-sharex
 RUN npm install --global pnpm@12.3.4
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -11,7 +11,7 @@ RUN --mount=type=cache,id=sharex-installer-pnpm,target=/root/.local/share/pnpm/s
 COPY . .
 RUN pnpm build
 
-FROM node:24.19.0-bookworm-slim
+FROM node:26.8.1-bookworm-slim
 WORKDIR /setup-sharex
 COPY --from=prod-deps /setup-sharex/node_modules ./node_modules
 COPY --from=build /setup-sharex/dist ./dist
