@@ -39,7 +39,7 @@
     "@types/dot": "^1.1.7",
     "@types/express": "^5.0.6",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^24.13.3",
+    "@types/node": "^26.6.1",
     "oxfmt": "0.66.0",
     "oxlint": "1.81.0",
     "source-map-support": "^0.5.21",
